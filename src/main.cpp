@@ -64,6 +64,8 @@ void loop() {
   Serial.println("Brillo = " + String(brillo));
   ledcWrite(PWM_canal, brillo);
   
+
+  
   delay(500);
 
 
