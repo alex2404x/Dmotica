@@ -11,18 +11,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-
-
-#include <Arduino.h>
 /*
 practica 1
 control ON/OFF de un diodo led mediante un pulsador.
 Control de luminosidad de un diodo led.
    
 */
-
-
+#include <Arduino.h>
 
 //           - DECLACION DE CTES Y VARIABLES-
 const uint8_t PWM_canal =0;                     //seleccion del canal PWM (0 A 15)
@@ -35,8 +30,9 @@ int sensor_0 = 0 , sensor_1 = 0;
 const uint8_t umbral_tactil = 20;              //Sensibilidad del sensor
 int brillo = 0;
 volatile bool bandera = false;
-
 static portMUX_TYPE mutex = portMUX_INITIALIZER_UNLOCKED;
+bool conmutador=false;
+
 
 // Declaracion de Funciones
 void IRAM_ATTR conmutar();
@@ -83,7 +79,10 @@ void loop() {
      bandera = false;
      portEXIT_CRITICAL(&mutex);
      delay(1);
-
+    if(!digitalRead(pulsador)){
+      conmutador=!conmutador;
+      digitalWrite(led_pulsador, conmutador);
+      }
     }
 
   Serial.println("Sensor 1 = " + String(sensor_1));
@@ -93,7 +92,7 @@ void loop() {
   
 
 
-  delay(500);
+  delay(40);
 
 
 }
