@@ -19,13 +19,13 @@ Control de luminosidad de un diodo led.
 */
 #include <Arduino.h>
 
-//           - DECLACION DE CTES Y VARIABLES-
+//           - DECLACION DE CONSTANTES Y VARIABLES-
 const uint8_t PWM_canal =0;                     //seleccion del canal PWM (0 A 15)
 const int PWM_frec =     5000;                  //5KHz PWM
 const byte PWM_resolucion = 8;                  //ciclo de trabajo de 0 a 255 
-const uint8_t pulsador = 2;                    //pulsador
-const uint8_t led_pulsador = 12;               //lED ON/OFF
-const uint8_t led_PWM = 14;                    //led dimmer
+const uint8_t pulsador = 2;                     //pulsador
+const uint8_t led_pulsador = 12;                //lED ON/OFF
+const uint8_t led_PWM = 14;                     //led dimmer
 int sensor_0 = 0 , sensor_1 = 0;
 const uint8_t umbral_tactil = 20;              //Sensibilidad del sensor
 int brillo = 0;
