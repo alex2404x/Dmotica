@@ -1,6 +1,18 @@
-/*
- Codigo Diseñado por alx2404x Prohibido su uso sin previa autorizacion.Copyright 2022 alx2404x
- */
+// Copyright 2022 alx2404x
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
 
 #include <Arduino.h>
 /*
@@ -22,13 +34,21 @@ const uint8_t led_PWM = 14;                    //led dimmer
 int sensor_0 = 0 , sensor_1 = 0;
 const uint8_t umbral_tactil = 20;              //Sensibilidad del sensor
 int brillo = 0;
+volatile bool bandera = false;
+
+static portMUX_TYPE mutex = portMUX_INITIALIZER_UNLOCKED;
+
+// Declaracion de Funciones
+void IRAM_ATTR conmutar();
 
 void setup() {
 Serial.begin(115200);                           //  depuración 
 ledcSetup(PWM_canal, PWM_frec, PWM_resolucion); // configurar PWM
 pinMode(pulsador,INPUT_PULLUP);                 // pulsador
 pinMode(led_pulsador, OUTPUT);                  // led on/off
-ledcAttachPin(led_PWM, PWM_canal);               // led dimmer
+ledcAttachPin(led_PWM, PWM_canal); // led dimmer
+
+attachInterrupt(digitalPinToInterrupt(pulsador),conmutar, FALLING);              
 
 }
 
@@ -52,12 +72,19 @@ void loop() {
 
    if (sensor_1 <  umbral_tactil && sensor_1 != 0){
      brillo = brillo - 5;
-     if(brillo <= 0){
+     if(brillo <= 0)
        brillo =  0;                                 //brillo minimo igual 0
-     }
+     
    }
   
-   digitalWrite(led_pulsador, digitalRead(pulsador));
+   //digitalWrite(led_pulsador, digitalRead(pulsador));
+   if(bandera){
+     portENTER_CRITICAL(&mutex);
+     bandera = false;
+     portEXIT_CRITICAL(&mutex);
+     delay(1);
+
+    }
 
   Serial.println("Sensor 1 = " + String(sensor_1));
   Serial.println("Sensor 0 = " + String(sensor_0));
@@ -65,14 +92,20 @@ void loop() {
   ledcWrite(PWM_canal, brillo);
   
 
-  
+
   delay(500);
 
 
+}
+
+// Mas funciones
+
+void IRAM_ATTR conmutar(){
+
+  portENTER_CRITICAL_ISR(&mutex);    //Proteger Bandera
+  bandera = true;                    // aviso boton pulsado
+  portEXIT_CRITICAL_ISR(&mutex);
+
   
 
-   
-  
-
-  
 }
